@@ -17,7 +17,23 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_copyKeyButton_clicked();
+
+    void on_resultCopyButton_clicked();
+
+    void on_chooseInputFileButton_clicked();
+
+    void on_resultFilePickButton_clicked();
+
+    void on_generateKeyButton_clicked();
+
+    void on_encryptButton_clicked();
+
+    void on_decryptButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+
 };
 #endif // MAINWINDOW_H

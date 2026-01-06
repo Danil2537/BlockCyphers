@@ -9,10 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    decrypt.cpp \
+    encrypt.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    decrypt.h \
+    encrypt.h \
+    keygen.h \
     mainwindow.h
 
 FORMS += \
