@@ -3,6 +3,11 @@
 #include <QClipboard>
 #include <QFileDialog>
 #include "keygen.h"
+#include "enums.h"
+#include "CipherContext.h"
+ #include "CipherFactory.h"
+ #include "ModeFactory.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,7 +21,41 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+CipherAlgorithm MainWindow::selectedAlgorithm() const
+{
+    const QString text = ui->algorithmComboBox->currentText();
 
+    if (text == "AES") return CipherAlgorithm::AES;
+    if (text == "DES") return CipherAlgorithm::DES;
+    if (text == "Blowfish") return CipherAlgorithm::Blowfish;
+    if (text == "IDEA") return CipherAlgorithm::IDEA;
+
+    throw std::runtime_error("Unknown algorithm");
+}
+
+CipherMode MainWindow::selectedMode() const
+{
+    const QString text = ui->modeComboBox->currentText();
+
+    if (text == "ECB") return CipherMode::ECB;
+    if (text == "CBC") return CipherMode::CBC;
+    if (text == "CFB") return CipherMode::CFB;
+    if (text == "OFB") return CipherMode::OFB;
+
+    throw std::runtime_error("Unknown mode");
+}
+
+PaddingType MainWindow::selectedPadding() const
+{
+    const QString text = ui->paddingComboBox->currentText();
+
+    if (text == "No Padding") return PaddingType::none;
+    if (text == "Zero Padding") return PaddingType::zero;
+    if (text == "ISO 10126") return PaddingType::ISO10126;
+    if (text == "PKCS5") return PaddingType::PKCS5;
+
+    throw std::runtime_error("Unknown padding");
+}
 
 void MainWindow::on_copyKeyButton_clicked()
 {
@@ -57,25 +96,130 @@ void MainWindow::on_resultFilePickButton_clicked()
     ui->resultTextBrowser->setText(dir);
 }
 
+QByteArray MainWindow::readKey() const
+{
+    QByteArray key = ui->keyTextEdit->toPlainText().toUtf8();
+    if (key.isEmpty())
+        throw std::runtime_error("Key is empty");
+
+    return key;
+}
+
+QByteArray MainWindow::readIV() const
+{
+    QByteArray iv = ui->IVTextEdit->toPlainText().toUtf8();
+    return iv; // may be empty - handled by mode
+}
+
+QByteArray MainWindow::readInputData() const
+{
+    if (ui->isFileCheckbox->isChecked()) {
+        QFile file(ui->dataTextEdit->toPlainText());
+        if (!file.open(QIODevice::ReadOnly))
+            throw std::runtime_error("Cannot open input file");
+
+        return file.readAll();
+    }
+
+    return ui->dataTextEdit->toPlainText().toUtf8();
+}
+
+CipherContext MainWindow::createCipherContext()
+{
+    int keyBits = ui->keySizeComboBox->currentText().toInt();
+
+    auto cipher = CipherFactory::createCipher(
+        selectedAlgorithm(),
+        keyBits
+        );
+
+    auto mode = ModeFactory::createMode(
+        selectedMode()
+        );
+
+    CipherContext ctx(std::move(cipher), std::move(mode));
+    ctx.setKey(readKey());
+
+    QByteArray iv = readIV();
+    if (!iv.isEmpty())
+        ctx.setIV(iv);
+
+    return ctx;
+}
 
 void MainWindow::on_generateKeyButton_clicked()
 {
-    ui->keyTextEdit->setText(
-        Keygen::Generate(
-            ui->keySizeComboBox->currentText().toInt()
-            )
-        );
+    int bits = ui->keySizeComboBox->currentText().toInt();
+    QByteArray key = KeyGenerator::generateKey(bits);
+
+    ui->keyTextEdit->setText(key.toHex());
 }
 
 
 void MainWindow::on_encryptButton_clicked()
 {
-    //TODO: implement the call to Encrypt
+    try {
+        CipherContext ctx = createCipherContext();
+        QByteArray input = readInputData();
+
+        QByteArray encrypted = ctx.encrypt(input);
+
+        if (ui->isFileCheckbox->isChecked()) {
+            QString outputDir = ui->resultTextBrowser->toPlainText();
+            QFile out(outputDir + "/encrypted.bin");
+
+            if (!out.open(QIODevice::WriteOnly))
+                throw std::runtime_error("Cannot write output file");
+
+            out.write(encrypted);
+        } else {
+            ui->resultTextBrowser->setText(
+                encrypted.toBase64()
+                );
+        }
+
+        statusBar()->showMessage("Encryption successful");
+    }
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "Encryption error", e.what());
+    }
 }
 
 
 void MainWindow::on_decryptButton_clicked()
 {
-    //TODO: implement the call to decrypt
+    try {
+        CipherContext ctx = createCipherContext();
+        QByteArray input;
+
+        if (ui->isFileCheckbox->isChecked()) {
+            input = readInputData();
+        } else {
+            input = QByteArray::fromBase64(
+                ui->dataTextEdit->toPlainText().toUtf8()
+                );
+        }
+
+        QByteArray decrypted = ctx.decrypt(input);
+
+        if (ui->isFileCheckbox->isChecked()) {
+            QString outputDir = ui->resultTextBrowser->toPlainText();
+            QFile out(outputDir + "/decrypted.out");
+
+            if (!out.open(QIODevice::WriteOnly))
+                throw std::runtime_error("Cannot write output file");
+
+            out.write(decrypted);
+        } else {
+            ui->resultTextBrowser->setText(
+                QString::fromUtf8(decrypted)
+                );
+        }
+
+        statusBar()->showMessage("Decryption successful");
+    }
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "Decryption error", e.what());
+    }
 }
 

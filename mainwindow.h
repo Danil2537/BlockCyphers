@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "enums.h"
+#include "Padding.h"
+#include "CipherContext.h"
+#include "CipherFactory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +35,20 @@ private slots:
     void on_encryptButton_clicked();
 
     void on_decryptButton_clicked();
+
+    CipherAlgorithm selectedAlgorithm() const;
+
+    CipherMode selectedMode() const;
+
+    PaddingType selectedPadding() const;
+
+    QByteArray readKey() const;
+
+    QByteArray readIV() const;
+
+    QByteArray readInputData() const;
+
+    CipherContext createCipherContext();
 
 private:
     Ui::MainWindow *ui;
