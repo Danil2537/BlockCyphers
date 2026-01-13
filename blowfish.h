@@ -17,8 +17,17 @@ public:
     QByteArray decryptBlock(const QByteArray& block) override;
 
 private:
-    int m_keyBits;
     QByteArray m_key;
+    static const int ROUNDS = 16;
+
+    uint32_t P[ROUNDS + 2];
+    uint32_t S[4][256];
+
+    int m_keyBits;
+
+    void encrypt(uint32_t& L, uint32_t& R);
+    void decrypt(uint32_t& L, uint32_t& R);
+    uint32_t F(uint32_t x) const;
 };
 
 #endif // BLOWFISH_H

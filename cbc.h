@@ -36,14 +36,19 @@ public:
         ) {
         const int blockSize = cipher.blockSize();
 
-        if (iv.size() != blockSize)
+        if (!iv.isEmpty() && iv.size() != blockSize)
             throw std::runtime_error("Invalid IV size");
 
         if (data.size() % blockSize != 0)
             throw std::runtime_error("CBC requires padded input");
 
         QByteArray result;
-        QByteArray prev = iv;
+        QByteArray prev;
+        if (iv.isEmpty()) {
+            prev = QByteArray(blockSize, 0); // zero IV
+        } else {
+            prev = iv;
+        }
 
         for (int offset = 0; offset < data.size(); offset += blockSize) {
             QByteArray block = data.mid(offset, blockSize);

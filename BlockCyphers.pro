@@ -28,6 +28,7 @@ HEADERS += \
     Padding.h \
     aes.h \
     blowfish.h \
+    blowfish_tables.h \
     cbc.h \
     cfb.h \
     des.h \
@@ -49,3 +50,7 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    aes_inv_sbox.inc \
+    aes_sbox.inc

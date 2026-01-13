@@ -211,9 +211,10 @@ void MainWindow::on_decryptButton_clicked()
 
             out.write(decrypted);
         } else {
-            ui->resultTextBrowser->setText(
-                QString::fromUtf8(decrypted)
-                );
+             ui->resultTextBrowser->setText(
+                 QString::fromUtf8(decrypted)
+                 );
+            //ui->resultTextBrowser->setText(decrypted.toBase64());
         }
 
         statusBar()->showMessage("Decryption successful");
