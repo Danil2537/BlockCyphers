@@ -28,7 +28,7 @@ CipherAlgorithm MainWindow::selectedAlgorithm() const
     if (text == "AES") return CipherAlgorithm::AES;
     if (text == "DES") return CipherAlgorithm::DES;
     if (text == "Blowfish") return CipherAlgorithm::Blowfish;
-    if (text == "IDEA") return CipherAlgorithm::IDEA;
+    if (text == "XTEA") return CipherAlgorithm::XTEA;
 
     throw std::runtime_error("Unknown algorithm");
 }
@@ -211,9 +211,10 @@ void MainWindow::on_decryptButton_clicked()
 
             out.write(decrypted);
         } else {
-             ui->resultTextBrowser->setText(
-                 QString::fromUtf8(decrypted)
-                 );
+            ui->resultTextBrowser->setText(
+                QString::fromUtf8(decrypted)
+                );
+
             //ui->resultTextBrowser->setText(decrypted.toBase64());
         }
 

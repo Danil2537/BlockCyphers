@@ -1,12 +1,14 @@
-#ifndef IDEA_H
-#define IDEA_H
+#ifndef XTEA_H
+#define XTEA_H
+
 #include "IBlockCipher.h"
-#include <stddef.h>
-#include<QByteArray>
-class IDEA : public IBlockCipher
+#include <array>
+#include <cstdint>
+
+class XTEA : public IBlockCipher
 {
 public:
-    explicit IDEA();
+    XTEA();
 
     size_t blockSize() const override;
     size_t keySize() const override;
@@ -17,8 +19,10 @@ public:
     QByteArray decryptBlock(const QByteArray& block) override;
 
 private:
-    int m_keyBits;
-    QByteArray m_key;
+    static constexpr uint32_t DELTA = 0x9E3779B9;
+    static constexpr int ROUNDS = 32;
+
+    std::array<uint32_t, 4> m_key;
 };
 
-#endif // IDEA_H
+#endif // XTEA_H

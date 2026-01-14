@@ -1,5 +1,4 @@
-// Taken from https://github.com/karashiiro/blowfish-tables
-//Refer there for the README and latest version of this file.
+//taken from https://www.schneier.com/wp-content/uploads/2015/12/constants-2.txt
 
 #ifndef BLOWFISH_TABLES_H
 #define BLOWFISH_TABLES_H

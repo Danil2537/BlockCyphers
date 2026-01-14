@@ -9,7 +9,7 @@
 #include "aes.h"
 #include "des.h"
 #include "blowfish.h"
-#include "idea.h"
+#include "xtea.h"
 
 
 class CipherFactory {
@@ -29,8 +29,8 @@ public:
         case CipherAlgorithm::DES:
             return std::make_unique<DES>();
 
-        case CipherAlgorithm::IDEA:
-            return std::make_unique<IDEA>();
+        case CipherAlgorithm::XTEA:
+            return std::make_unique<XTEA>();
 
         default:
             throw std::invalid_argument("Unsupported cipher algorithm");

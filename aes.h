@@ -1,9 +1,8 @@
 #ifndef AES_H
 #define AES_H
-
-#include "IBlockCipher.h"
 #include <QByteArray>
 #include <cstddef>
+#include "IBlockCipher.h"
 
 class AES : public IBlockCipher {
 public:

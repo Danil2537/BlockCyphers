@@ -5,7 +5,7 @@ enum class CipherAlgorithm {
     AES,
     DES,
     Blowfish,
-    IDEA
+    XTEA
 };
 
 enum class CipherMode {

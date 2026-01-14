@@ -13,9 +13,9 @@ SOURCES += \
     aes.cpp \
     blowfish.cpp \
     des.cpp \
-    idea.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    xtea.cpp
 
 HEADERS += \
     CipherContext.h \
@@ -34,9 +34,9 @@ HEADERS += \
     des.h \
     ecb.h \
     enums.h \
-    idea.h \
     mainwindow.h \
-    ofb.h
+    ofb.h \
+    xtea.h
 
 FORMS += \
     mainwindow.ui
