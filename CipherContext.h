@@ -15,6 +15,9 @@ public:
 
     void setKey(const QByteArray& key);
     void setIV(const QByteArray& iv);
+    void setPadding(PaddingType p) {
+        m_padding = p;
+    }
 
     QByteArray encrypt(const QByteArray& data);
     QByteArray decrypt(const QByteArray& data);
@@ -22,6 +25,7 @@ public:
 private:
     std::unique_ptr<IBlockCipher> m_cipher;
     std::unique_ptr<IMode> m_mode;
+    PaddingType m_padding = PaddingType::none;
 };
 
 #endif // CIPHERCONTEXT_H

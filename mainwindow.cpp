@@ -77,8 +77,8 @@ void MainWindow::on_chooseInputFileButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Choose file to encrypt"),
-                                                    ".",
-                                                    tr("Any File"));
+                                                    "../../../",
+                                                    tr("*"));
     ui->dataTextEdit->setText(fileName);
 }
 
@@ -143,6 +143,8 @@ CipherContext MainWindow::createCipherContext()
     QByteArray iv = readIV();
     if (!iv.isEmpty())
         ctx.setIV(iv);
+
+    ctx.setPadding(selectedPadding());
 
     return ctx;
 }

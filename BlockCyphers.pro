@@ -15,6 +15,7 @@ SOURCES += \
     des.cpp \
     main.cpp \
     mainwindow.cpp \
+    padding.cpp \
     xtea.cpp
 
 HEADERS += \

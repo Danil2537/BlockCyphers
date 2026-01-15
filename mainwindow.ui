@@ -180,26 +180,6 @@
      </property>
     </item>
    </widget>
-   <widget class="QLabel" name="outputFormatLabel">
-    <property name="geometry">
-     <rect>
-      <x>430</x>
-      <y>240</y>
-      <width>200</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Programme</family>
-      <pointsize>14</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Output Text Format:</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="encryptButton">
     <property name="geometry">
      <rect>
@@ -259,10 +239,10 @@
    <widget class="QPushButton" name="generateKeyButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>10</y>
-      <width>120</width>
-      <height>30</height>
+      <x>430</x>
+      <y>240</y>
+      <width>190</width>
+      <height>50</height>
      </rect>
     </property>
     <property name="text">
@@ -470,31 +450,6 @@
     <property name="text">
      <string>Enter IV (optional)</string>
     </property>
-   </widget>
-   <widget class="QComboBox" name="modeComboBox_2">
-    <property name="geometry">
-     <rect>
-      <x>430</x>
-      <y>270</y>
-      <width>190</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>Plain-Text</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Base64</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Hex</string>
-     </property>
-    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
