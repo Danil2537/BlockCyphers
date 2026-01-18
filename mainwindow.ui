@@ -129,6 +129,12 @@
       <height>30</height>
      </rect>
     </property>
+    <property name="locale">
+     <locale language="English" country="UnitedStates"/>
+    </property>
+    <property name="currentText">
+     <string notr="true">AES</string>
+    </property>
     <item>
      <property name="text">
       <string>AES</string>
@@ -158,6 +164,9 @@
       <width>190</width>
       <height>30</height>
      </rect>
+    </property>
+    <property name="currentText">
+     <string notr="true">CBC</string>
     </property>
     <item>
      <property name="text">
@@ -257,6 +266,9 @@
       <width>190</width>
       <height>30</height>
      </rect>
+    </property>
+    <property name="currentText">
+     <string notr="true">No Padding</string>
     </property>
     <item>
      <property name="text">

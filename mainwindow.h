@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include<QTranslator>
 #include "enums.h"
 #include "Padding.h"
 #include "CipherContext.h"
@@ -52,6 +53,5 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
 };
 #endif // MAINWINDOW_H

@@ -19,7 +19,7 @@ public:
 private:
     int m_keyBits;
     int m_rounds;
-    QByteArray m_roundKeys; // expanded key
+    QByteArray m_roundKeys;
 };
 
 #endif // AES_H

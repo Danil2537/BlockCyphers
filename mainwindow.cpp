@@ -21,14 +21,28 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// CipherAlgorithm MainWindow::selectedAlgorithm() const
+// {
+//     const QString text = ui->algorithmComboBox->currentText();
+
+//     if (text == "AES") return CipherAlgorithm::AES;
+//     if (text == "DES") return CipherAlgorithm::DES;
+//     if (text == "Blowfish") return CipherAlgorithm::Blowfish;
+//     if (text == "XTEA") return CipherAlgorithm::XTEA;
+
+//     throw std::runtime_error(tr("Unknown algorithm").toStdString());
+// }
+
 CipherAlgorithm MainWindow::selectedAlgorithm() const
 {
-    const QString text = ui->algorithmComboBox->currentText();
+    QString id = ui->algorithmComboBox->currentData().toString();
+    if (id.isEmpty())
+        id = ui->algorithmComboBox->currentText();
 
-    if (text == "AES") return CipherAlgorithm::AES;
-    if (text == "DES") return CipherAlgorithm::DES;
-    if (text == "Blowfish") return CipherAlgorithm::Blowfish;
-    if (text == "XTEA") return CipherAlgorithm::XTEA;
+    if (id == "AES") return CipherAlgorithm::AES;
+    if (id == "DES") return CipherAlgorithm::DES;
+    if (id == "Blowfish") return CipherAlgorithm::Blowfish;
+    if (id == "XTEA") return CipherAlgorithm::XTEA;
 
     throw std::runtime_error("Unknown algorithm");
 }
@@ -121,7 +135,9 @@ QByteArray MainWindow::readInputData() const
         return file.readAll();
     }
 
-    return ui->dataTextEdit->toPlainText().toUtf8();
+    return QByteArray::fromBase64(
+        ui->dataTextEdit->toPlainText().toUtf8()
+        );
 }
 
 CipherContext MainWindow::createCipherContext()
@@ -180,10 +196,12 @@ void MainWindow::on_encryptButton_clicked()
                 );
         }
 
-        statusBar()->showMessage("Encryption successful");
+       statusBar()->showMessage(tr("Encryption successful"));
     }
     catch (const std::exception& e) {
-        QMessageBox::critical(this, "Encryption error", e.what());
+        QMessageBox::critical(this,
+                              tr("Encryption error"),
+                              e.what());
     }
 }
 

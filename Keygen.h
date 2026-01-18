@@ -22,22 +22,22 @@ public:
     }
 };
 
-class IVGenerator {
-public:
-    static QByteArray generateIV(size_t blockSize)
-    {
-        if (blockSize == 0)
-            throw std::invalid_argument("Block size must be > 0");
+// class IVGenerator {
+// public:
+//     static QByteArray generateIV(size_t blockSize)
+//     {
+//         if (blockSize == 0)
+//             throw std::invalid_argument("Block size must be > 0");
 
-        QByteArray iv(static_cast<int>(blockSize), Qt::Uninitialized);
+//         QByteArray iv(static_cast<int>(blockSize), Qt::Uninitialized);
 
-        QRandomGenerator::system()->generate(
-            reinterpret_cast<quint32*>(iv.data()),
-            reinterpret_cast<quint32*>(iv.data() + iv.size())
-            );
+//         QRandomGenerator::system()->generate(
+//             reinterpret_cast<quint32*>(iv.data()),
+//             reinterpret_cast<quint32*>(iv.data() + iv.size())
+//             );
 
-        return iv;
-    }
-};
+//         return iv;
+//     }
+// };
 
 #endif // KEYGEN_H
