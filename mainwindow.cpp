@@ -135,9 +135,10 @@ QByteArray MainWindow::readInputData() const
         return file.readAll();
     }
 
-    return QByteArray::fromBase64(
-        ui->dataTextEdit->toPlainText().toUtf8()
-        );
+    // return QByteArray::fromBase64(
+    //     ui->dataTextEdit->toPlainText().toUtf8()
+    //     );
+    return ui->dataTextEdit->toPlainText().toUtf8();
 }
 
 CipherContext MainWindow::createCipherContext()
