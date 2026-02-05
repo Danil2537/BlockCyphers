@@ -14,6 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->algorithmComboBox, &QComboBox::currentTextChanged,
+            this, &MainWindow::updateAllowedSizes);
+    connect(ui->modeComboBox, &QComboBox::currentTextChanged,
+            this, &MainWindow::updateAllowedSizes);
+
+    // Call once at startup
+    updateAllowedSizes();
 }
 
 MainWindow::~MainWindow()
@@ -32,6 +39,48 @@ MainWindow::~MainWindow()
 
 //     throw std::runtime_error(tr("Unknown algorithm").toStdString());
 // }
+
+void MainWindow::updateAllowedSizes()
+{
+    CipherAlgorithm algo = selectedAlgorithm();
+    CipherMode mode = selectedMode();
+
+    int defaultKeySize = 128;
+
+    // Set the allowed key size as a single number
+    switch(algo) {
+    case CipherAlgorithm::AES:
+        defaultKeySize = 128; // pick 128 as default
+        break;
+    case CipherAlgorithm::Blowfish:
+        defaultKeySize = 128; // can be any 32–448, pick default
+        break;
+    case CipherAlgorithm::DES:
+        defaultKeySize = 56;
+        break;
+    case CipherAlgorithm::XTEA:
+        defaultKeySize = 128;
+        break;
+    }
+
+    ui->allowedKeySizeLabel->setText(QString::number(defaultKeySize));
+
+    // IV sizes
+    int blockSize = 0;
+    switch(algo) {
+    case CipherAlgorithm::AES: blockSize = 128; break;
+    case CipherAlgorithm::Blowfish: blockSize = 64; break;
+    case CipherAlgorithm::DES: blockSize = 64; break;
+    case CipherAlgorithm::XTEA: blockSize = 64; break;
+    }
+    ui->allowedIVSizeLabel->setText(mode == CipherMode::ECB ? "0" : QString::number(blockSize));
+
+    // // Message size info
+    // ui->allowedMsgSizeLabel->setText(
+    //     QString("Any size").arg(blockSize)
+    //     );
+}
+
 
 CipherAlgorithm MainWindow::selectedAlgorithm() const
 {
@@ -110,11 +159,65 @@ void MainWindow::on_resultFilePickButton_clicked()
     ui->resultTextBrowser->setText(dir);
 }
 
+// QByteArray MainWindow::readKey() const
+// {
+//     QByteArray key = ui->keyTextEdit->toPlainText().toUtf8();
+//     if (key.isEmpty())
+//         throw std::runtime_error("Key is empty");
+
+//     return key;
+// }
+
+// QByteArray MainWindow::readIV() const
+// {
+//     QByteArray iv = ui->IVTextEdit->toPlainText().toUtf8();
+//     return iv; // may be empty - handled by mode
+// }
+
+// QByteArray MainWindow::readInputData() const
+// {
+//     if (ui->isFileCheckbox->isChecked()) {
+//         QFile file(ui->dataTextEdit->toPlainText());
+//         if (!file.open(QIODevice::ReadOnly))
+//             throw std::runtime_error("Cannot open input file");
+
+//         return file.readAll();
+//     }
+
+//     // return QByteArray::fromBase64(
+//     //     ui->dataTextEdit->toPlainText().toUtf8()
+//     //     );
+//     return ui->dataTextEdit->toPlainText().toUtf8();
+// }
+
 QByteArray MainWindow::readKey() const
 {
     QByteArray key = ui->keyTextEdit->toPlainText().toUtf8();
     if (key.isEmpty())
         throw std::runtime_error("Key is empty");
+
+    // Check allowed key length
+    CipherAlgorithm algo = selectedAlgorithm();
+    int keyBits = key.size() * 8;
+
+    bool valid = false;
+    switch(algo) {
+    case CipherAlgorithm::AES:
+        valid = (keyBits == 128 || keyBits == 192 || keyBits == 256);
+        break;
+    case CipherAlgorithm::Blowfish:
+        valid = (keyBits >= 32 && keyBits <= 448);
+        break;
+    case CipherAlgorithm::DES:
+        valid = (keyBits == 56);
+        break;
+    case CipherAlgorithm::XTEA:
+        valid = (keyBits == 128);
+        break;
+    }
+
+    if (!valid)
+        throw std::runtime_error("Key length invalid for selected algorithm");
 
     return key;
 }
@@ -122,29 +225,49 @@ QByteArray MainWindow::readKey() const
 QByteArray MainWindow::readIV() const
 {
     QByteArray iv = ui->IVTextEdit->toPlainText().toUtf8();
-    return iv; // may be empty - handled by mode
+
+    CipherMode mode = selectedMode();
+    if (mode == CipherMode::ECB) return QByteArray(); // no IV
+
+    CipherAlgorithm algo = selectedAlgorithm();
+    int blockSize = 0;
+    switch(algo) {
+    case CipherAlgorithm::AES: blockSize = 128; break;
+    case CipherAlgorithm::Blowfish: blockSize = 64; break;
+    case CipherAlgorithm::DES: blockSize = 64; break;
+    case CipherAlgorithm::XTEA: blockSize = 64; break;
+    }
+
+    if (iv.size() * 8 != blockSize)
+        throw std::runtime_error(
+            QString("IV must be %1 bits").arg(blockSize).toStdString()
+            );
+
+    return iv;
 }
 
 QByteArray MainWindow::readInputData() const
 {
+    QByteArray data;
     if (ui->isFileCheckbox->isChecked()) {
         QFile file(ui->dataTextEdit->toPlainText());
         if (!file.open(QIODevice::ReadOnly))
             throw std::runtime_error("Cannot open input file");
-
-        return file.readAll();
+        data = file.readAll();
+    } else {
+        data = ui->dataTextEdit->toPlainText().toUtf8();
     }
 
-    // return QByteArray::fromBase64(
-    //     ui->dataTextEdit->toPlainText().toUtf8()
-    //     );
-    return ui->dataTextEdit->toPlainText().toUtf8();
+    if (data.isEmpty())
+        throw std::runtime_error("Message cannot be empty");
+
+    return data;
 }
 
 CipherContext MainWindow::createCipherContext()
 {
-    int keyBits = ui->keySizeComboBox->currentText().toInt();
-
+    //int keyBits = ui->keySizeComboBox->currentText().toInt();
+    int keyBits = ui->allowedKeySizeLabel->text().toInt();
     auto cipher = CipherFactory::createCipher(
         selectedAlgorithm(),
         keyBits
@@ -168,10 +291,10 @@ CipherContext MainWindow::createCipherContext()
 
 void MainWindow::on_generateKeyButton_clicked()
 {
-    int bits = ui->keySizeComboBox->currentText().toInt();
+    int bits = ui->allowedKeySizeLabel->text().toInt();
     QByteArray key = KeyGenerator::generateKey(bits);
 
-    ui->keyTextEdit->setText(key.toHex());
+    ui->keyTextEdit->setText(key);
 }
 
 

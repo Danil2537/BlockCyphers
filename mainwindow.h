@@ -51,6 +51,8 @@ private slots:
 
     CipherContext createCipherContext();
 
+    void updateAllowedSizes();
+
 private:
     Ui::MainWindow *ui;
 };

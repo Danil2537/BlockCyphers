@@ -33,7 +33,7 @@ void Blowfish::setKey(const QByteArray& key)
         throw std::invalid_argument("Invalid Blowfish key length");
 
     /* -------------------------------------------------
-     * 1. Copy initial P-array and S-boxes (π digits)
+     * 1. Copy initial P-array and S-boxes (pi digits)
      * ------------------------------------------------- */
     for (int i = 0; i < ROUNDS + 2; ++i)
         P[i] = static_cast<uint32_t>(parray[i]);

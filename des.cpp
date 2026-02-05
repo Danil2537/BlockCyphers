@@ -192,11 +192,11 @@ void DES::generateSubkeys(uint64_t key)
 
 void DES::setKey(const QByteArray& key)
 {
-    if (key.size() != 8)
+    if (key.size() != 7)
         throw std::invalid_argument("Invalid DES key size");
 
     uint64_t k = 0;
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < 7; ++i)
         k = (k << 8) | static_cast<uint8_t>(key[i]);
 
     generateSubkeys(k);
